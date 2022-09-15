@@ -66,7 +66,8 @@ npm test
 {
     "name": string,
     "totalShare": number,
-    "sharesDistribtion": array of objectIDs,
+    "sharesDistribtion": array of number,
+    "sharesOwners": array of objectIDs,
     "liverates": number,
 }
 ```
