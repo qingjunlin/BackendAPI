@@ -65,6 +65,7 @@ npm test
 ```Json
 {
     "name": string,
+    "totalShare": number,
     "sharesDistribtion": array of objectIDs,
     "liverates": number,
 }
