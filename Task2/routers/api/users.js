@@ -42,7 +42,7 @@ router.get('/', async (req, res, next) => {
 })
 
 
-router.patch('/addbalance', middleware.LoginAuth, async (req, res, next) => {
+router.patch('/deposit', middleware.LoginAuth, async (req, res, next) => {
 
     try {
         const userFound = await User.findOneAndUpdate({ _id: req.session.user._id }, { $inc: { wallet: req.body.balanceAdded } }, { new: true })
@@ -54,6 +54,64 @@ router.patch('/addbalance', middleware.LoginAuth, async (req, res, next) => {
 
         if (userFound != null) {
             res.status(200).send(userFound)
+            return next()
+        }
+        else {
+            res.json({ message: 'bad request' })
+        }
+
+    } catch (error) {
+        console.log(error)
+        if (typeof error === 'object' && error !== null && error.name === "MongoNetworkError") {
+            res.status(500).send("internal server error")
+        }
+        else {
+            res.status(400).send("bad request")
+        }
+    }
+})
+
+
+router.patch('/sharesChange/:id', middleware.LoginAuth, async (req, res, next) => {
+
+    const company = req.params.id
+    const share = req.body.share
+    const shareNeg = share * -1
+    const isBought = req.session.user.sharesOwnCompany && req.session.user.sharesOwnCompany.includes(company)
+    let userFound
+    let companyFound
+    try {
+        if (isBought){
+
+            const shareBefore = req.session.user.shares[(req.session.user.sharesOwnCompany.indexOf(company))]
+            userFound = await User.findOneAndUpdate({ _id: req.session.user._id, shares: shareBefore}, { $inc: { "shares.$" : share }}, { new: true })
+            .catch((error) => {
+                console.log(error)
+                res.status(400).json({ message: 'balance updated failed' })
+            })
+            companyFound = await Company.findOneAndUpdate({ _id: company, sharesDistribtion: shareBefore}, { $inc: { "sharesDistribtion.$" : share, totalShare : shareNeg }}, { new: true })
+            .catch((error) => {
+                console.log(error)
+                res.status(400).json({ message: 'balance update failed' })
+            })
+        }
+        else {
+             userFound = await User.findOneAndUpdate(req.session.user._id, { $addToSet: { shares: share, sharesOwnCompany: company}}, { new: true })
+            .catch((error) => {
+                console.log(error)
+                res.status(400).json({ message: 'balance update failed' })
+            })
+            companyFound = await Company.findOneAndUpdate(company, { $addToSet: { sharesDistribtion: share, sharesOwners: req.session.user._id}, $inc: { totalShare : shareNeg }}, { new: true })
+            .catch((error) => {
+                console.log(error)
+                res.status(400).json({ message: 'balance update failed' })
+            })
+        }
+        
+
+
+        if (userFound != null && companyFound !=null) {
+            res.status(200).send(userFound + companyFound)
             return next()
         }
         else {

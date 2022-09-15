@@ -15,7 +15,6 @@ const EndPointSchema = new mongoose.Schema({
     }],
     liverates: [{
         type: Number,
-        required: true,
     }]
 
 }, {timestamps: true},)

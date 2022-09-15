@@ -5,7 +5,14 @@ const CompanySchema = new mongoose.Schema({
 		type: String,
         required: true,
 	},
+    totalShare: {
+        type: Number,
+        required: true,
+    },
     sharesDistribtion: [{
+        type: Number,
+    }],
+    sharesOwners: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
     }],
