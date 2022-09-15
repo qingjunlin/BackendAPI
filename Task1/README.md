@@ -41,6 +41,8 @@ npm test
     - valid id for testing: 6321e40d5eb8bf78a3f48ea4
 - Patch /api/tweet/:id
     - update the content of a tweet with specific id with current login user
+- Patch /api/:id/like
+    - update the like and unlike state for users interact with tweets
 - Delete /api/tweet/:id
     - Delete a tweet with specific id with current login user
 ### Models
@@ -54,7 +56,8 @@ npm test
     "firstname": string,
     "lastname": string,
     "age": number,
-    "email": string
+    "email": string,
+    "likes": array of objectID
 }
 ```
 
@@ -63,6 +66,7 @@ npm test
 ```Json
 {
     "content": string,
-    "user": ObjectId
+    "user": ObjectId,
+    "likes": array of objectID
 }
 ```

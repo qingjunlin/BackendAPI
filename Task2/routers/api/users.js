@@ -130,5 +130,45 @@ router.patch('/sharesChange/:id', middleware.LoginAuth, async (req, res, next) =
 })
 
 
+router.patch('/subChange/:id', middleware.LoginAuth, async (req, res, next) => {
+
+    const endpoint = req.params.id
+    const user = req.session.user._id
+
+    const isSub = req.session.user.subscriptions && req.session.user.subscriptions.includes(endpoint)
+    
+    const option = isSub ? "$pull" : "$addToSet"
+
+    try {
+        userFound = await User.findOneAndUpdate(user, { [option]: {subscriptions : endpoint } }, { new: true })
+            .catch((error) => {
+                console.log(error)
+                res.status(400).json({ message: 'balance updated failed' })
+            })
+        endpointFound = await EndPoint.findOneAndUpdate(endpoint, { [option]: {subscribers : user } }, { new: true })
+            .catch((error) => {
+                console.log(error)
+                res.status(400).json({ message: 'balance updated failed' })
+            })
+
+
+        if (userFound != null && endpointFound !=null) {
+            res.status(200).send(userFound + endpointFound)
+            return next()
+        }
+        else {
+            res.json({ message: 'bad request' })
+        }
+
+    } catch (error) {
+        console.log(error)
+        if (typeof error === 'object' && error !== null && error.name === "MongoNetworkError") {
+            res.status(500).send("internal server error")
+        }
+        else {
+            res.status(400).send("bad request")
+        }
+    }
+})
 
 module.exports = router

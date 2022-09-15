@@ -196,4 +196,48 @@ router.delete('/:id', middleware.LoginAuth, async (req, res, next) => {
 })
 
 
+router.patch('/:id/like', middleware.LoginAuth, async (req, res, next) => {
+
+    const tweet = req.params.id
+    const user = req.session.user._id
+
+    const isLiked = req.session.user.likes && req.session.user.likes.includes(tweet)
+    
+    const option = isLiked ? "$pull" : "$addToSet"
+
+    try {
+        userFound = await User.findByIdAndUpdate(user, { [option]: {likes : tweet } }, { new: true })
+            .catch((error) => {
+                console.log(error)
+                res.status(400).json({ message: 'balance updated failed' })
+            })
+        tweetFound = await Tweet.findByIdAndUpdate(tweet, { [option]: {likes : user } }, { new: true })
+            .catch((error) => {
+                console.log(error)
+                res.status(400).json({ message: 'balance updated failed' })
+            })
+
+
+        if (userFound != null && tweetFound !=null) {
+            req.session.user = userFound
+            res.status(200).send(userFound + tweetFound)
+            return next()
+        }
+        else {
+            res.json({ message: 'bad request' })
+        }
+
+    } catch (error) {
+        console.log(error)
+        if (typeof error === 'object' && error !== null && error.name === "MongoNetworkError") {
+            res.status(500).send("internal server error")
+        }
+        else {
+            res.status(400).send("bad request")
+        }
+    }
+})
+
+
+
 module.exports = router

@@ -39,6 +39,10 @@ npm test
      - if but share for this company for the first time
     - update corresponsed company information including share distribution and total share
 
+- Patch /api/users/subChange/:id
+    - update current login user's subscription to an endpoint
+    - update corresponsed endpoint subscribers field
+
 - Post /api/companies/
     - create a company with name and totalShare in json body
 - Post /api/endpoints/

@@ -77,6 +77,7 @@ describe('Twitter API', () => {
                             _id: expect.any(String),
                             content: expect.any(String),
                             user: expect.any(String),
+                            likes: expect.any(Array),
                             createdAt: expect.any(String),
                             updatedAt: expect.any(String)
                         }
@@ -97,6 +98,7 @@ describe('Twitter API', () => {
                         _id: '6322343b7cffe68bf8c40d2a',
                         content: expect.any(String),
                         user: expect.any(String),
+                        likes: expect.any(Array),
                         createdAt: expect.any(String),
                         updatedAt: expect.any(String)
                     }
@@ -119,6 +121,7 @@ describe('Twitter API', () => {
                             _id: expect.any(String),
                             content: expect.any(String),
                             user: '6321e40d5eb8bf78a3f48ea4',
+                            likes: expect.any(Array),
                             createdAt: expect.any(String),
                             updatedAt: expect.any(String)
                         }]
